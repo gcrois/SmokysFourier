@@ -27,12 +27,11 @@ function mainCalculate(x){
 function parseFile(file){
     let alex = parse(file);
     let x = [];
-    let y=[];
     let i, j;
     for(i=0; i<alex.commands.length; i++){
         for(j=0; j< alex.commands[i].p['x'].length;j++){
             x.push(alex.commands[i].p['x'][j]);
         }
     }
-    return mainCalculate(x, y);
+    return mainCalculate(x);
 }
