@@ -1,6 +1,10 @@
 // Authors: Gregory Croisdale and John Carmack
 // Turns SVG into a parametrized function
 
+const precision = 100;
+const DELTA = .1;
+const GLOB_N = 20;
+
 class C {
   constructor(curr_loc, param) {
     this.p0 = curr_loc;
@@ -34,8 +38,6 @@ class M {
 
 
 // All svg commands
-const DELTA = .1;
-const GLOB_N = 10;
 const SVG_COMMANDS = {
   M: M,
   m: "m",
@@ -106,8 +108,8 @@ class Path {
       }
     }
 
-    this.ft_x = this.fft(this.func.x, 10);
-    this.ft_y = this.fft(this.func.y, 10);
+    this.ft_x = this.fft(this.func.x, precision);
+    this.ft_y = this.fft(this.func.y, precision);
   }
 
   // plots already existing equations
