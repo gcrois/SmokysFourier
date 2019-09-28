@@ -5,17 +5,25 @@ class Circle{
         this.centerY = centerY;
         this.rotation = rotation;
     }
-    rotate(){
+    rotatePrimary(){
         let delta = 10;
         this.rotation += delta;
-
+    }
+    rotateSecondary(circle){
+        let delta = 10;
+        this.rotation += delta;
+        const radian = Math.PI/180;
+        this.centerX =(circle.centerX+circle.radius*Math.cos(circle.rotation*radian));
+        this.centerY =(circle.centerY+circle.radius*Math.sin(circle.rotation*radian));
     }
 }
 function rotateCircles(circles){
     let i;
     clearGraph();
-    for(i=0; i<circles.length; i++){
-        circles[i].rotate();
+    circles[0].rotatePrimary();
+    draw_circle(circles[0]);
+    for(i=1; i<circles.length; i++){
+        circles[i].rotateSecondary(circles[i-1]);
         draw_circle(circles[i]);
     }
 }
@@ -29,8 +37,14 @@ function clearGraph(){
 function setup(){
     let i;
     let circles = [];
-    for(i=1; i<=5; i++){
-        circles.push(new Circle(i*10, (6-i)*100,(6-i)*100, i*6));
+    let circle;
+    const radian = Math.PI/180;
+    circles.push(new Circle(50, 300, 300, 6));
+    circle = circles[0];
+    for(i=4; i>=0; i--){
+        console.log(circle.centerX + " " +circle.centerY);
+        circles.push(new Circle(i*10, (circle.centerX+circle.radius*Math.cos(circle.rotation*radian)), (circle.centerY+circle.radius*Math.sin(circle.rotation*radian)), i*6));
+        circle = circles[circles.length-1];
     }
     for(i=0; i<5; i++){
         draw_circle(circles[i]);
