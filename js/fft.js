@@ -7,20 +7,20 @@ function fft(func, N) {
   let a0 = (1/Math.PI) * integral(func,-Math.PI, Math.PI);
 
   // create an
-  function f_cos(x) {
-    return func(x) * Math.cos(x);
-  }
   function an (n) {
-    return (1/Math.PI) * integral(f_cos,-Math.PI, Math.PI, n);
+    function multed(t) {
+      return Math.cos(t * n) * func(t);
+    }
+    return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
   }
 
   // create bn
-  function f_sin(x) {
-    return func(x) * Math.sin(x);
-  }
   function bn (n) {
-    console.log(integral(f_sin,-Math.PI, Math.PI, n));
-    return (1/Math.PI) * integral(f_sin,-Math.PI, Math.PI, n);
+    function multed(t) {
+      return Math.sin(t * n) * func(t);
+    }
+    //console.log(integral(f_sin,-Math.PI, Math.PI, n));
+    return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
   }
 
   // find each iteration of series
@@ -34,12 +34,12 @@ function fft(func, N) {
 
 // calculates the definite integral of a function using
 // trapezoidal approximation
-function integral(func, start, end, mult=1, n=GLOB_N) {
+function integral(func, start, end, n=GLOB_N) {
   let area = 0;
   let d_x = ((end - start) / n);
   for (let c = 0; c < n; c++) {
     let i = start + (c * d_x);
-    area += .5 * (func(i * mult) + func((i + d_x) * mult)) * d_x;
+    area += .5 * (func(i) + func(i + d_x)) * d_x;
   }
   return area;
 }

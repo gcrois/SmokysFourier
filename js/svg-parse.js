@@ -3,6 +3,7 @@
 
 // All svg commands
 const DELTA = .1;
+const GLOB_N = 10;
 const SVG_COMMANDS = {
   M: M,
   m: "m",
@@ -29,6 +30,8 @@ const SVG_COMMANDS = {
   a: "a",
 }
 
+
+// contains a single path
 class Path {
   constructor(input) {
     this.commands = input;
@@ -39,34 +42,43 @@ class Path {
     this.origin = {
       x: 0,
       y: 0,
-    }
+    };
     this.func = {
       x: [],
       y: [],
     };
-  }
-  create_equation() {
+
+    // Creates parametrizations from commands
+    // loops through each command
     for (let i = 0; i < this.commands.length; i++) {
+      // special case for Z
       if (this.commands[i].type == 'Z') {
         this.func.y[i] = L(this.curr_loc.y, [this.origin.y]);
         this.func.x[i] = L(this.curr_loc.x, [this.origin.x]);
-        console.log("TESTTEST");
         continue;
       }
+      // finds cooresponding parametrization
       let parameters = this.commands[i].p;
-      console.log("x");
       let x_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.x, parameters["x"])
-      console.log("y");
       let y_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.y, parameters["y"])
+      // defines parametrization for certain time
       this.func.y[i] = y_func;
       this.func.x[i] = x_func;
+      // sets current location for next command's use
       this.curr_loc["x"] = x_func(1);
       this.curr_loc["y"] = y_func(1);
+      // saves first location for z command
       if (i == 0) {
         this.origin.x = this.curr_loc.x;
         this.origin.y = this.curr_loc.y;
       }
     }
+
+    this.ft_x = this.fft(this.func.x, 10);
+  }
+
+  // plots already existing equations
+  plot_equation() {
     let c = document.getElementById('plot');
     let ctx = c.getContext("2d");
     ctx.translate(0,0);
@@ -85,21 +97,43 @@ class Path {
         ctx.stroke();
       }
     }
-    function sum_x(t) {
-      total = 0;
-      for (let i = 0; i < this.func.x.length; i++) {
-        total += this.func.x[i](t);
-      }
-      return total;
+  }
+
+  // fourier transform
+  fft(functions, N) {
+    console.log(functions);
+    function func(t) {
+      return functions[Math.floor(t)];
     }
-    function sum_y(t) {
-      total = 0;
-      for (let i = 0; i < this.func.y.length; i++) {
-        total += this.func.y[i](t);
+    console.log(func(1))
+    // calc a0, empty array for trig functions
+    let cos_coeff = [];
+    let sin_coeff = [];
+    let a0 = (1/Math.PI) * integral(func,-Math.PI, Math.PI);
+
+    // create an
+    function an (n) {
+      function multed(t) {
+        return Math.cos(t * n) * func(t);
       }
-      return total;
+      return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
     }
-    return {x: sum_x, y: sum_y}
+
+    // create bn
+    function bn (n) {
+      function multed(t) {
+        return Math.sin(t * n) * func(t);
+      }
+      //console.log(integral(f_sin,-Math.PI, Math.PI, n));
+      return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
+    }
+
+    // find each iteration of series
+    for (var n = 1; n < N; n++) {
+      cos_coeff.push(an(n));
+      sin_coeff.push(bn(n));
+    }
+    return {start: a0 / 2, cos: cos_coeff, sin: sin_coeff};
   }
 }
 
@@ -131,10 +165,7 @@ class Command {
       else {
         this.p["x"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
       }
-
     }
-    console.log(this.p)
-
   }
 }
 
@@ -191,11 +222,23 @@ function M(curr_loc, param) {
 }
 
 function L(curr_loc, dest) {
-  console.log("curr_loc: " + curr_loc)
-  console.log("dest: " + dest)
   return (t, p0 = dest[0]) => { return curr_loc + (dest[0] - curr_loc) * t;}
 }
 
 function isEmpty(char) {
   return (!(char == ""));
+}
+
+// fancy maths
+
+// calculates the definite integral of a function using
+// trapezoidal approximation
+function integral(func, start, end, n=GLOB_N) {
+  let area = 0;
+  let d_x = ((end - start) / n);
+  for (let c = 0; c < n; c++) {
+    let i = start + (c * d_x);
+    area += .5 * (func(i) + func(i + d_x)) * d_x;
+  }
+  return area;
 }
