@@ -85,6 +85,21 @@ class Path {
         ctx.stroke();
       }
     }
+    function sum_x(t) {
+      total = 0;
+      for (let i = 0; i < this.func.x.length; i++) {
+        total += this.func.x[i](t);
+      }
+      return total;
+    }
+    function sum_y(t) {
+      total = 0;
+      for (let i = 0; i < this.func.y.length; i++) {
+        total += this.func.y[i](t);
+      }
+      return total;
+    }
+    return {x: sum_x, y: sum_y}
   }
 }
 
