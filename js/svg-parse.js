@@ -6,14 +6,15 @@ const DELTA = .1;
 const SVG_COMMANDS = {
   M: M,
   m: "m",
-  L: "L",
+  L: L,
   l: "l",
   H: "H",
   h: "h",
   V: "V",
   v: "v",
   // THESE ARE THE SAME
-  Z: "z",
+  // SPECIAL CASE Z: "z",
+  Z: "Z",
   z: "z",
   // GETS COMPLICATED FROM HERE
   C: C,
@@ -35,6 +36,10 @@ class Path {
       x: 0,
       y: 0,
     };
+    this.origin = {
+      x: 0,
+      y: 0,
+    }
     this.func = {
       x: [],
       y: [],
@@ -42,13 +47,25 @@ class Path {
   }
   create_equation() {
     for (let i = 0; i < this.commands.length; i++) {
+      if (this.commands[i].type == 'Z') {
+        this.func.y[i] = L(this.curr_loc.y, [this.origin.y]);
+        this.func.x[i] = L(this.curr_loc.x, [this.origin.x]);
+        console.log("TESTTEST");
+        continue;
+      }
       let parameters = this.commands[i].p;
+      console.log("x");
       let x_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.x, parameters["x"])
+      console.log("y");
       let y_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.y, parameters["y"])
       this.func.y[i] = y_func;
       this.func.x[i] = x_func;
       this.curr_loc["x"] = x_func(1);
       this.curr_loc["y"] = y_func(1);
+      if (i == 0) {
+        this.origin.x = this.curr_loc.x;
+        this.origin.y = this.curr_loc.y;
+      }
     }
     let c = document.getElementById('plot');
     let ctx = c.getContext("2d");
@@ -67,8 +84,6 @@ class Path {
         ctx.lineTo(x_p * 10, y_p * -10);
         ctx.stroke();
       }
-      console.log(x);
-      console.log(y);
     }
   }
 }
@@ -104,7 +119,7 @@ class Command {
         this.nums[curr_num] += curr_char;
       }
     }
-
+    
     // turns strings into float
     for (var i = 0; i < this.nums.length; i++) {
       if (i % 2 == 1) {
@@ -165,4 +180,14 @@ function C(curr_loc, param) {
 
 function M(curr_loc, param) {
   return (t, p0 = param[0]) => { return p0 }
+}
+
+function L(curr_loc, dest) {
+  console.log("curr_loc: " + curr_loc)
+  console.log("dest: " + dest)
+  return (t, p0 = dest[0]) => { return curr_loc + (dest[0] - curr_loc) * t;}
+}
+
+function isEmpty(char) {
+  return (!(char == ""));
 }
