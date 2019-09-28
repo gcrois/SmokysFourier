@@ -81,7 +81,7 @@ class Path {
         let y_p = this.func["y"][i](j);
         x.push(x_p);
         y.push(y_p);
-        ctx.lineTo(x_p * 10, y_p * -10);
+        ctx.lineTo(x_p, y_p * -1);
         ctx.stroke();
       }
     }
@@ -103,23 +103,11 @@ class Command {
 
   // turns string of all numbers into individual numbers
   separate() {
-    let curr_num = 0;
-    for (var i = 0; i < this.param.length; i++) {
-      var curr_char = this.param[i];
-      if (curr_char == '-') {
-        if (i != 0) {
-          this.nums[++curr_num] = "";
-        }
-        this.nums[curr_num] += curr_char;
-      }
-      else if (curr_char == ',' || curr_char == ' ') {
-        this.nums[++curr_num] = "";
-      }
-      else {
-        this.nums[curr_num] += curr_char;
-      }
-    }
-    
+    this.param = this.param.replace(/,/g, " ");
+    this.param = this.param.replace(/-/g, " -");
+    let no_space = this.param.split(" ");
+    this.nums = no_space.filter(isEmpty);
+
     // turns strings into float
     for (var i = 0; i < this.nums.length; i++) {
       if (i % 2 == 1) {
@@ -130,6 +118,7 @@ class Command {
       }
 
     }
+    console.log(this.p)
 
   }
 }
