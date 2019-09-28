@@ -1,17 +1,17 @@
+let i=200;
 class Circle{
-    constructor(radius, centerX, centerY, rotation){
+    constructor(radius, centerX, centerY, rotation, speed){
         this.radius = radius;
         this.centerX = centerX;
         this.centerY = centerY;
         this.rotation = rotation;
+        this.speed  = speed;
     }
     rotatePrimary(){
-        let delta = 10;
-        this.rotation += delta;
+        this.rotation += this.speed;
     }
     rotateSecondary(circle){
-        let delta = 10;
-        this.rotation += delta;
+        this.rotation += this.speed;
         const radian = Math.PI/180;
         this.centerX =(circle.centerX+circle.radius*Math.cos(circle.rotation*radian));
         this.centerY =(circle.centerY+circle.radius*Math.sin(circle.rotation*radian));
@@ -26,32 +26,57 @@ function rotateCircles(circles){
         circles[i].rotateSecondary(circles[i-1]);
         draw_circle(circles[i]);
     }
+    let circle = circles[i-1];
+    draw_vector(circle.centerX, circle.centerY);
 }
 
 function clearGraph(){
     let c = document.getElementById("graph");
     let ctx=c.getContext("2d");
-    ctx.clearRect(0,0,600,600);
+    ctx.clearRect(0,0,1500,1500);
+}
+let oldX;
+let oldY;
+function draw_vector(x,y){
+    let c = document.getElementById("graph2");
+    let ctx=c.getContext("2d");
+    let colors = ["red", "blue", "green", "black", "purple"];
+    ctx.lineWidth = "1";
+    /*if(i < 100){
+        i++;
+    }else{
+        i=0;
+        ctx.beginPath();
+
+        ctx.lineTo(oldX,oldY);
+        ctx.strokeStyle= colors[Math.floor(Math.random()*6)]
+    }*/
+    ctx.strokeStyle = "red";
+    ctx.lineTo(x,y);
+    //oldX=x;oldY=y;
+    ctx.stroke();
 }
 
 function setup(){
+    let c = document.getElementById("graph2");
+    let ctx=c.getContext("2d");
+    ctx.beginPath();
+    ctx.strokeStyle= "red";
     let i;
     let circles = [];
     let circle;
     const radian = Math.PI/180;
-    circles.push(new Circle(50, 300, 300, 6));
+    circles.push(new Circle(100, 750, 300, Math.floor(Math.random()*11),.2));
     circle = circles[0];
-    for(i=4; i>=0; i--){
-        console.log(circle.centerX + " " +circle.centerY);
-        circles.push(new Circle(i*10, (circle.centerX+circle.radius*Math.cos(circle.rotation*radian)), (circle.centerY+circle.radius*Math.sin(circle.rotation*radian)), i*6));
+    for(i=9; i>=0; i--){
+        circles.push(new Circle(i*10, (circle.centerX+circle.radius*Math.cos(circle.rotation*radian)), (circle.centerY+circle.radius*Math.sin(circle.rotation*radian)), Math.floor(Math.random()*11),.7*i));
         circle = circles[circles.length-1];
     }
-    for(i=0; i<5; i++){
+    for(i=0; i<circles.length; i++){
         draw_circle(circles[i]);
     }
-    for(i=0; i<5; i++){
-        setTimeout(function(){rotateCircles(circles);}, (i+1)*1000);
-    }
+    setInterval(function(){rotateCircles(circles);}, 8.7);
+
 }
 function draw_circle(circle){
     const radian = Math.PI/180;
