@@ -69,7 +69,7 @@ class Path {
     }
     let c = document.getElementById('plot');
     let ctx = c.getContext("2d");
-    ctx.translate(0,250);
+    ctx.translate(0,0);
     ctx.lineWidth = "2";
     ctx.strokeStyle = "black";
     ctx.beginPath();
@@ -81,7 +81,7 @@ class Path {
         let y_p = this.func["y"][i](j);
         x.push(x_p);
         y.push(y_p);
-        ctx.lineTo(x_p, y_p * -1);
+        ctx.lineTo(x_p, y_p);
         ctx.stroke();
       }
     }
@@ -165,6 +165,10 @@ function print_curve(input) {
 
 function C(curr_loc, param) {
   return (t, p0 = curr_loc, p1 = param[0], p2 = param[1], p3 = param[2]) => { return (((1 - t) * (1 - t) * (1 - t) * p0) + 3 *  (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3) };
+}
+
+function c(curr_loc, param) {
+  C(curr_loc, param.map(x => curr_loc + x));
 }
 
 function M(curr_loc, param) {
