@@ -1,7 +1,6 @@
 // Authors: Gregory Croisdale and John Carmack
 // Turns SVG into a parametrized function
 
-
 // All svg commands
 const SVG_COMMANDS = {
   M: "M",
@@ -26,6 +25,12 @@ const SVG_COMMANDS = {
   t: "t",
   A: "A",
   a: "a",
+}
+
+class Path {
+  constructor(input) {
+    this.commands = input;
+  }
 }
 
 // Each a step in the path
@@ -84,12 +89,21 @@ function parse(str, delimiters = SVG_COMMANDS) {
       parsed[curr_elem].param += curr_char;
     }
   }
+  let all_commands = [];
   for (var i = 0; i < parsed.length; i++) {
     let out = parsed[i].type + ": ";
     parsed[i].separate();
+    all_commands[i] = parsed[i];
     for (var j = 0; j < parsed[i].nums.length; j++) {
         out += (parsed[i].p[j] + " ");
     }
-    console.log(out);
+  }
+  o_ret = new Path(all_commands);
+  return o_ret;
+}
+
+function print_curve(input) {
+  for (let i = 0; i < input.commands.length; i++) {
+    console.log(input.commands[i].p);
   }
 }
