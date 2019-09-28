@@ -19,7 +19,7 @@ class L {
     this.p0 = param[0];
   }
   val(t) {
-    return this.cl + (this.p0 - this.loc) * t;
+    return this.cl + (this.p0 - this.cl) * t;
   }
 }
 
@@ -107,6 +107,7 @@ class Path {
     }
 
     this.ft_x = this.fft(this.func.x, 10);
+    this.ft_y = this.fft(this.func.y, 10);
   }
 
   // plots already existing equations
