@@ -1,6 +1,38 @@
 // Authors: Gregory Croisdale and John Carmack
 // Turns SVG into a parametrized function
 
+class C {
+  constructor(curr_loc, param) {
+    this.p0 = curr_loc;
+    this.p1 = param[0];
+    this.p2 = param[1];
+    this.p3 = param[2];
+  }
+  val(t) {
+    return (((1 - t) * (1 - t) * (1 - t) * this.p0) + 3 *  (1 - t) * (1 - t) * t * this.p1 + 3 * (1 - t) * t * t * this.p2 + t * t * t * this.p3);
+  }
+}
+
+class L {
+  constructor(curr_loc, param) {
+    this.cl = curr_loc;
+    this.p0 = param[0];
+  }
+  val(t) {
+    return this.cl + (this.p0 - this.loc) * t;
+  }
+}
+
+class M {
+  constructor(curr_loc, param) {
+  this.p0 = param[0];
+  }
+  val(t){
+    return this.p0;
+  }
+}
+
+
 // All svg commands
 const DELTA = .1;
 const GLOB_N = 10;
@@ -53,20 +85,20 @@ class Path {
     for (let i = 0; i < this.commands.length; i++) {
       // special case for Z
       if (this.commands[i].type == 'Z') {
-        this.func.y[i] = L(this.curr_loc.y, [this.origin.y]);
-        this.func.x[i] = L(this.curr_loc.x, [this.origin.x]);
+        this.func.y[i] = new L(this.curr_loc.y, [this.origin.y]);
+        this.func.x[i] = new L(this.curr_loc.x, [this.origin.x]);
         continue;
       }
       // finds cooresponding parametrization
       let parameters = this.commands[i].p;
-      let x_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.x, parameters["x"])
-      let y_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.y, parameters["y"])
+      let x_func = new SVG_COMMANDS[this.commands[i].type](this.curr_loc.x, parameters["x"])
+      let y_func = new SVG_COMMANDS[this.commands[i].type](this.curr_loc.y, parameters["y"])
       // defines parametrization for certain time
       this.func.y[i] = y_func;
       this.func.x[i] = x_func;
       // sets current location for next command's use
-      this.curr_loc["x"] = x_func(1);
-      this.curr_loc["y"] = y_func(1);
+      this.curr_loc["x"] = x_func.val(1);
+      this.curr_loc["y"] = y_func.val(1);
       // saves first location for z command
       if (i == 0) {
         this.origin.x = this.curr_loc.x;
@@ -101,31 +133,20 @@ class Path {
 
   // fourier transform
   fft(functions, N) {
-    console.log(functions);
-    function func(t) {
-      return functions[Math.floor(t)];
-    }
-    console.log(func(1))
     // calc a0, empty array for trig functions
     let cos_coeff = [];
     let sin_coeff = [];
-    let a0 = (1/Math.PI) * integral(func,-Math.PI, Math.PI);
+    let a0 = (1/Math.PI) * integral(functions,-Math.PI, Math.PI);
 
     // create an
     function an (n) {
-      function multed(t) {
-        return Math.cos(t * n) * func(t);
-      }
-      return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
+      return (1/Math.PI) * cos_integral(functions,-Math.PI, Math.PI, n);
     }
 
     // create bn
     function bn (n) {
-      function multed(t) {
-        return Math.sin(t * n) * func(t);
-      }
       //console.log(integral(f_sin,-Math.PI, Math.PI, n));
-      return (1/Math.PI) * integral(multed,-Math.PI, Math.PI);
+      return (1/Math.PI) * sin_integral(functions,-Math.PI, Math.PI, n);
     }
 
     // find each iteration of series
@@ -208,23 +229,6 @@ function print_curve(input) {
 }
 
 // COMMAND FUNCTIONS:
-
-function C(curr_loc, param) {
-  return (t, p0 = curr_loc, p1 = param[0], p2 = param[1], p3 = param[2]) => { return (((1 - t) * (1 - t) * (1 - t) * p0) + 3 *  (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3) };
-}
-
-function c(curr_loc, param) {
-  C(curr_loc, param.map(x => curr_loc + x));
-}
-
-function M(curr_loc, param) {
-  return (t, p0 = param[0]) => { return p0 }
-}
-
-function L(curr_loc, dest) {
-  return (t, p0 = dest[0]) => { return curr_loc + (dest[0] - curr_loc) * t;}
-}
-
 function isEmpty(char) {
   return (!(char == ""));
 }
@@ -233,12 +237,48 @@ function isEmpty(char) {
 
 // calculates the definite integral of a function using
 // trapezoidal approximation
-function integral(func, start, end, n=GLOB_N) {
+function integral(all_functions, start, end, n=GLOB_N) {
+  function getIndex(t) {
+    let d_n = (2 * Math.PI) / all_functions.length;
+    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
+  }
   let area = 0;
   let d_x = ((end - start) / n);
   for (let c = 0; c < n; c++) {
     let i = start + (c * d_x);
-    area += .5 * (func(i) + func(i + d_x)) * d_x;
+    area += .5 * (all_functions[getIndex(i)].val(i) + all_functions[getIndex(i + d_x)].val(i + d_x)) * d_x;
+  }
+  return area;
+}
+
+// calculates the definite integral of a function using
+// trapezoidal approximation
+function cos_integral(all_functions, start, end, N, n=GLOB_N) {
+  function getIndex(t) {
+    let d_n = (2 * Math.PI) / all_functions.length;
+    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
+  }
+  let area = 0;
+  let d_x = ((end - start) / n);
+  for (let c = 0; c < n; c++) {
+    let i = start + (c * d_x);
+    area += .5 * ((all_functions[getIndex(i)].val(i) * Math.cos(i * N)) + (all_functions[getIndex(i + d_x)].val((i + d_x)) * Math.cos(i * N)) * d_x);
+  }
+  return area;
+}
+
+// calculates the definite integral of a function using
+// trapezoidal approximation
+function sin_integral(all_functions, start, end, N, n=GLOB_N) {
+  function getIndex(t) {
+    let d_n = (2 * Math.PI) / all_functions.length;
+    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
+  }
+  let area = 0;
+  let d_x = ((end - start) / n);
+  for (let c = 0; c < n; c++) {
+    let i = start + (c * d_x);
+    area += .5 * ((all_functions[getIndex(i)].val(i) * Math.sin(i * N)) + (all_functions[getIndex(i + d_x)].val((i + d_x)) * Math.sin(i * N)) * d_x);
   }
   return area;
 }
