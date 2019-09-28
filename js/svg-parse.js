@@ -4,7 +4,7 @@
 // All svg commands
 const DELTA = .1;
 const SVG_COMMANDS = {
-  M: "M",
+  M: M,
   m: "m",
   L: "L",
   l: "l",
@@ -43,8 +43,12 @@ class Path {
   create_equation() {
     for (let i = 0; i < this.commands.length; i++) {
       let parameters = this.commands[i].p;
-      this.func.y[i] = SVG_COMMANDS[this.commands[i].type](parameters["y"]);
-      this.func.x[i] = SVG_COMMANDS[this.commands[i].type](parameters["x"]);
+      let x_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.x, parameters["x"])
+      let y_func = SVG_COMMANDS[this.commands[i].type](this.curr_loc.y, parameters["y"])
+      this.func.y[i] = y_func;
+      this.func.x[i] = x_func;
+      this.curr_loc["x"] = x_func(1);
+      this.curr_loc["y"] = y_func(1);
     }
     let c = document.getElementById('plot');
     let ctx = c.getContext("2d");
@@ -155,7 +159,10 @@ function print_curve(input) {
 
 // COMMAND FUNCTIONS:
 
-function C(param) {
-  console.log(param);
-  return (t, p0 = param[0], p1 = param[1], p2 = param[2]) => { return (p1 + ( ( 1 - t ) * ( 1 - t ) ) * ( p0 - p1 ) + ( t * t ) * ( p2 - p1 )) };
+function C(curr_loc, param) {
+  return (t, p0 = curr_loc, p1 = param[0], p2 = param[1], p3 = param[2]) => { return ((1 - t) * (1 - t) * (1 - t) * p0 + 3 *  (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3) };
+}
+
+function M(curr_loc, param) {
+  return (t, p0 = param[0]) => { return p0 }
 }
