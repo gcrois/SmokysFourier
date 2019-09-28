@@ -108,10 +108,10 @@ class Command {
     // turns strings into float
     for (var i = 0; i < this.nums.length; i++) {
       if (i % 2 == 1) {
-        this.p["x"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
+        this.p["y"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
       }
       else {
-        this.p["y"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
+        this.p["x"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
       }
 
     }
