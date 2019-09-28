@@ -1,7 +1,7 @@
 // Authors: Gregory Croisdale and John Carmack
 // Turns SVG into a parametrized function
 
-const precision = 100;
+const precision = 20;
 const DELTA = .1;
 const GLOB_N = 20;
 
@@ -108,9 +108,7 @@ class Path {
       }
     }
 
-    this.ft_x = this.fft(this.func.x, precision);
-    this.ft_y = this.fft(this.func.y, precision);
-  }
+}
 
   // plots already existing equations
   plot_equation() {
