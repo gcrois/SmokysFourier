@@ -160,7 +160,7 @@ function print_curve(input) {
 // COMMAND FUNCTIONS:
 
 function C(curr_loc, param) {
-  return (t, p0 = curr_loc, p1 = param[0], p2 = param[1], p3 = param[2]) => { return ((1 - t) * (1 - t) * (1 - t) * p0 + 3 *  (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3) };
+  return (t, p0 = curr_loc, p1 = param[0], p2 = param[1], p3 = param[2]) => { return (((1 - t) * (1 - t) * (1 - t) * p0) + 3 *  (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3) };
 }
 
 function M(curr_loc, param) {
