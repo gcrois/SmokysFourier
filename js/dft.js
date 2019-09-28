@@ -8,42 +8,30 @@ function calculate_w(N, n,k){
     return scope.w;
 }
 
-function mainCalculate(x,y){
-    let xArr=[], yArr =[];
-    let i,j;
+function mainCalculate(x){
+    let xArr=[];
+    let i, j;
     let sum=math.complex(0,0);
     let temp=0, temp2;
-    console.log(x);
-    for(i=0; i<y.length-1; i++){
+    for(i=0; i < precision; i++){
         temp=0;
-        for(j=0; j<y.length-1; j++){
-            temp2 = math.multiply(calculate_w(20, j, i),y[j]);
-            temp = math.add(temp2, temp);
-        }
-        yArr.push(temp);
-        sum = math.add(temp, sum);
-    }
-    for(i =0; i< x.length-1; i++){
-        temp=0;
-        for(j=0; j<y.length-1; j++){
-            temp2 = math.multiply(calculate_w(20, j, i),x[j],sum);
+        for(j=0; j< x.length-1; j++){
+            temp2 = calculate_w(precision, j, i);
             temp = math.add(temp2, temp);
         }
         xArr.push(temp);
     }
-    val = {xarr: xArr, yarr:yArr};
-    return val;
+    return xArr;
 }
 
 function parseFile(file){
     let alex = parse(file);
     let x = [];
     let y=[];
-    let i, j, z;
+    let i, j;
     for(i=0; i<alex.commands.length; i++){
         for(j=0; j< alex.commands[i].p['x'].length;j++){
             x.push(alex.commands[i].p['x'][j]);
-            y.push(alex.commands[i].p['y'][j]);
         }
     }
     return mainCalculate(x, y);
