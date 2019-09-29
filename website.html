@@ -7,10 +7,17 @@
 	<script src="js/dft.js"></script>
 	<script src="js/svg-parse.js"></script>
 	<script src="js/graphics.js"></script>
+
 	<style>
-		#Controls{position:relative;
-        left:0px;
+		#ControlTable{
+				position:relative;
+        left:-412px;
         top:730px;}
+		#User{
+			position:relative;
+			left: 659px;
+			top:629px
+		}
 		#Presets{style = float: left;}
 		#Colors{style = float: right;}
 		body{
@@ -42,6 +49,7 @@
 	        top:8px;
 	    }
 	</style>
+
 </head>
 
 <center>
@@ -67,39 +75,28 @@
 			<div id="Controls">
 
 				<div id="ControlTable">
-					<table border ="1">
-					<tbody>
-					<tr>
-					<th>PRESETS</th>
-					<th>COLORS</th>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id="Circle" value="Circle"> Circle<br></td>
-					<td><input type="radio" name="colors" id="Red" value="Red"> Red<br></td>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id="MLG" value="MLG"> MLG<br></td>
-					<td><input type="radio" name="colors" id="Green" value="Green"> Green<br></td>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id="Square" value="Square"> Square<br></td>
-					<td><input type="radio" name="colors" id="Blue" value="Blue"> Blue<br></td>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id="Triangle" value="Triangle"> Triangle<br></td>
-					<td><input type="radio" name="colors" id="Rainbow" value="Rainbow"> Rainbow<br></td>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id="Volhacks" value="Volhacks"> Volhacks<br></td>
-					<td><input type="radio" name="colors" id="Black" value="Black"> Black<br></td>
-					</tr>
-					<tr>
-					<td><input type="radio" name="presets" id ="Custom" value="Custom"> Custom<br></td>
-					<td><input type="radio" name="colors" id ="Pink" value="Pink"> Pink<br></td>
-					</tr>
-					</tbody>
-					</table>
-				<div>
+					<table border = "1">
+						<tbody>
+						<tr>
+						<td>Presets</td>
+						<td><input type="radio" name="presets" id="Circle" value="Circle"> Circle<br></td>
+						<td><input type="radio" name="presets" id="MLG" value="MLG"> MLG<br></td>
+						<td><input type="radio" name="presets" id="Square" value="Square"> Square<br></td>
+						<td><input type="radio" name="presets" id="Triangle" value="Triangle"> Triangle<br></td>
+						<td><input type="radio" name="presets" id="Volhacks" value="Volhacks"> Volhacks<br></td>
+						<td><input type="radio" name="presets" id ="Custom" value="Custom"> Custom<br></td>
+						</tr>
+						<tr>
+						<td>Colors</td>
+						<td><input type="radio" name="colors" id="Red" value="Red"> Red<br></td>
+						<td><input type="radio" name="colors" id="Green" value="Green"> Green<br></td>
+						<td><input type="radio" name="colors" id="Blue" value="Blue"> Blue<br></td>
+						<td><input type="radio" name="colors" id="Rainbow" value="Rainbow"> Rainbow<br></td>
+						<td><input type="radio" name="colors" id="Black" value="Black"> Black<br></td>
+						<td><input type="radio" name="colors" id ="Pink" value="Pink"> Pink<br></td>
+						</tr>
+						</tbody>
+						</table>
 			</div>
 			<br>
 		<div id="User">
