@@ -159,6 +159,13 @@ function setup(){
     setInterval(function(){rotateCircles(circles);}, 8.7);
 }
 
+function fancy_draw(circles){
+  for(i=0; i<circles.length; i++){
+      draw_circle(circles[i]);
+  }
+  setInterval(function(){rotateCircles(circles);}, 8.7);
+}
+
 function draw_circle(circle){
     const radian = Math.PI/180;
     let c = document.getElementById("graph");

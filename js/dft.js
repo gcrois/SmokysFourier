@@ -1,3 +1,4 @@
+const precision = 20;
 function calculate_w(N, n,k){
     scope = {
         Nd: N,
