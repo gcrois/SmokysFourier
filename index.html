@@ -1,15 +1,15 @@
 <html>
 <head>
-<script src="js/plotly-latest.min.js"></script>
 <script src="js/svg-parse.js"></script>
+<script src="js/circle-gen.js"></script>
 <!<script src="js/fft.js"></script>
 <title>
   Testing Environment VolHacks 2019
 </title>
 </head>
 <body>
-  <button onclick="parse(ask()).create_equation()">TEST</button>
+  <button onclick="parse(ask()).plot_equation()">TEST</button>
   <canvas id="plot" width="256px" height="256px"> </canvas>
-    <button onclick="console.log(parse(ask()).ft_x)">integrate</button>
+    <button onclick="integrate(parse(ask()).func)">integrate</button>
 </body>
 </html>

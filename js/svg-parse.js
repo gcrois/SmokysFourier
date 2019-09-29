@@ -1,9 +1,7 @@
 // Authors: Gregory Croisdale and John Carmack
 // Turns SVG into a parametrized function
 
-const precision = 20;
 const DELTA = .1;
-const GLOB_N = 20;
 
 class C {
   constructor(curr_loc, param) {
@@ -122,40 +120,14 @@ class Path {
       let x = [];
       let y = [];
       for (let j = 0; j < 1; j += DELTA) {
-        let x_p = this.func["x"][i](j);
-        let y_p = this.func["y"][i](j);
+        let x_p = this.func["x"][i].val(j);
+        let y_p = this.func["y"][i].val(j);
         x.push(x_p);
         y.push(y_p);
         ctx.lineTo(x_p, y_p);
         ctx.stroke();
       }
     }
-  }
-
-  // fourier transform
-  fft(functions, N) {
-    // calc a0, empty array for trig functions
-    let cos_coeff = [];
-    let sin_coeff = [];
-    let a0 = (1/Math.PI) * integral(functions,-Math.PI, Math.PI);
-
-    // create an
-    function an (n) {
-      return (1/Math.PI) * cos_integral(functions,-Math.PI, Math.PI, n);
-    }
-
-    // create bn
-    function bn (n) {
-      //console.log(integral(f_sin,-Math.PI, Math.PI, n));
-      return (1/Math.PI) * sin_integral(functions,-Math.PI, Math.PI, n);
-    }
-
-    // find each iteration of series
-    for (var n = 1; n < N; n++) {
-      cos_coeff.push(an(n));
-      sin_coeff.push(bn(n));
-    }
-    return {start: a0 / 2, cos: cos_coeff, sin: sin_coeff};
   }
 }
 
@@ -165,11 +137,10 @@ class Command {
   constructor(type) {
     this.type = type;
     this.param = "";  // all numbers
-    this.nums = [""]; // numbers separated as strings
-    this.p = {
+    this.p = {        // numbers as numbers
       x: [],
       y: [],
-    }                 // numbers as numbers
+    }
   }
 
   // turns string of all numbers into individual numbers
@@ -177,15 +148,15 @@ class Command {
     this.param = this.param.replace(/,/g, " ");
     this.param = this.param.replace(/-/g, " -");
     let no_space = this.param.split(" ");
-    this.nums = no_space.filter(isEmpty);
+    let nums = no_space.filter(isEmpty);
 
     // turns strings into float
-    for (var i = 0; i < this.nums.length; i++) {
+    for (var i = 0; i < nums.length; i++) {
       if (i % 2 == 1) {
-        this.p["y"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
+        this.p["y"][Math.floor(i / 2)] = parseFloat(nums[i]);
       }
       else {
-        this.p["x"][Math.floor(i / 2)] = parseFloat(this.nums[i]);
+        this.p["x"][Math.floor(i / 2)] = parseFloat(nums[i]);
       }
     }
   }
@@ -212,12 +183,8 @@ function parse(str, delimiters = SVG_COMMANDS) {
   }
   let all_commands = [];
   for (var i = 0; i < parsed.length; i++) {
-    let out = parsed[i].type + ": ";
     parsed[i].separate();
     all_commands[i] = parsed[i];
-    for (var j = 0; j < parsed[i].nums.length; j++) {
-        out += (parsed[i].p[j] + " ");
-    }
   }
   o_ret = new Path(all_commands);
   return o_ret;
@@ -232,54 +199,4 @@ function print_curve(input) {
 // COMMAND FUNCTIONS:
 function isEmpty(char) {
   return (!(char == ""));
-}
-
-// fancy maths
-
-// calculates the definite integral of a function using
-// trapezoidal approximation
-function integral(all_functions, start, end, n=GLOB_N) {
-  function getIndex(t) {
-    let d_n = (2 * Math.PI) / all_functions.length;
-    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
-  }
-  let area = 0;
-  let d_x = ((end - start) / n);
-  for (let c = 0; c < n; c++) {
-    let i = start + (c * d_x);
-    area += .5 * (all_functions[getIndex(i)].val(i) + all_functions[getIndex(i + d_x)].val(i + d_x)) * d_x;
-  }
-  return area;
-}
-
-// calculates the definite integral of a function using
-// trapezoidal approximation
-function cos_integral(all_functions, start, end, N, n=GLOB_N) {
-  function getIndex(t) {
-    let d_n = (2 * Math.PI) / all_functions.length;
-    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
-  }
-  let area = 0;
-  let d_x = ((end - start) / n);
-  for (let c = 0; c < n; c++) {
-    let i = start + (c * d_x);
-    area += .5 * ((all_functions[getIndex(i)].val(i) * Math.cos(i * N)) + (all_functions[getIndex(i + d_x)].val((i + d_x)) * Math.cos(i * N)) * d_x);
-  }
-  return area;
-}
-
-// calculates the definite integral of a function using
-// trapezoidal approximation
-function sin_integral(all_functions, start, end, N, n=GLOB_N) {
-  function getIndex(t) {
-    let d_n = (2 * Math.PI) / all_functions.length;
-    return Math.floor((t + Math.PI) / d_n) % all_functions.length;
-  }
-  let area = 0;
-  let d_x = ((end - start) / n);
-  for (let c = 0; c < n; c++) {
-    let i = start + (c * d_x);
-    area += .5 * ((all_functions[getIndex(i)].val(i) * Math.sin(i * N)) + (all_functions[getIndex(i + d_x)].val((i + d_x)) * Math.sin(i * N)) * d_x);
-  }
-  return area;
 }
