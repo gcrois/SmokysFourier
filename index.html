@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="js/svg-parse.js"></script>
+<script src="js/graphics.js"></script>
 <script src="js/circle-gen.js"></script>
 <!<script src="js/fft.js"></script>
 <title>
@@ -10,6 +11,6 @@
 <body>
   <button onclick="parse(ask()).plot_equation()">TEST</button>
   <canvas id="plot" width="256px" height="256px"> </canvas>
-    <button onclick="integrate(parse(ask()).func)">integrate</button>
+    <button onclick="console.log(parseCircles(getCoeff(parse(ask()).func,10)))">integrate</button>
 </body>
 </html>
